@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IPersonDao">
+	<resultMap type="com.nb.org.domain.Department" id="departmentResultMap">
+		<id property="id" column="id" />
+		<result property="sn" column="sn" />
+		<result property="name" column="name" />
+		<result property="fullname" column="fullname" />
+		<result property="contactPerson" column="contactPerson" />
+		<result property="contactNumber" column="contactNumber" />
+		<result property="address" column="address" />
+		<result property="description" column="description" />
+	</resultMap>
+	<resultMap type="com.nb.org.domain.Person" id="personResultMap">
+		<id property="id" column="id" />
+		<result property="sn" column="sn" />
+		<result property="name" column="name" />
+		<result property="username" column="username" />
+		<result property="gender" column="gender" />
+		<result property="telephone" column="telephone" />
+		<result property="mobilephone" column="mobilephone" />
+		<result property="email" column="email" />
+		<association property="createDep" column="createDepId"
+			select="getDepartmentById" />
+		<collection property="deps" column="id" select="selectDeps"></collection>
+	</resultMap>
+	<select id="selectDeps" resultType="com.nb.org.domain.Department"
+		parameterType="int">
+		select dep.* from position pos join department dep
+		on(pos.depId=dep.id)
+		where pos.perId=#{id}
+	</select>
+	<select id="getDepartmentById" resultMap="departmentResultMap"
+		parameterType="int">
+		select * from department where id=#{id}
+	</select>
+	<!-- 根据person表中的id查询人员信息 -->
+	<select id="selectPerson" parameterType="int" resultMap="personResultMap">
+		select *
+		from person where id=#{id}
+	</select>
+
+	<!-- 根据person表中的userName查询人员信息 -->
+	<select id="selectPersonByUserName" parameterType="java.lang.String"
+		resultMap="personResultMap">
+		select *
+		from person where username=#{userName}
+	</select>
+
+	<!-- 根据userNames查询人员信息 -->
+	<select id="getPersonsByUserNames" parameterType="java.util.List" resultMap="personResultMap">
+		select * from person
+		<where>
+			username in
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<delete id="delPerson" parameterType="int">
+		delete from person where id
+		= #{id}
+	</delete>
+
+	<insert id="insertPerson" parameterType="com.nb.org.domain.Person"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into person ( sn,
+		name,username,
+		gender,telephone,mobilephone,email,createDepId)
+		values (
+		#{sn}, #{name}, #{username},#{gender}, #{telephone},#{mobilephone},
+		#{email},#{createDep.id})
+	</insert>
+
+	<update id="updatePerson" parameterType="com.nb.org.domain.Person">
+		update person set
+		name=#{name},
+		gender=#{gender},telephone=#{telephone},mobilephone=#{mobilephone},
+		email=#{email}where id=#{id}
+	</update>
+	<update id="updatePersonDepId" parameterType="com.nb.org.domain.Person">
+		update person set createDepId=#{createDep.id} where id=#{id}
+	</update>
+
+	<!-- 保存人员和部门的关系信息 -->
+	<insert id="saveRelativity" parameterType="com.nb.org.domain.Position">
+		insert into position (
+		name,perId,depId,adminFlag)
+		values(#{name},#{person.id},#{dep.id},#{adminFlag})
+	</insert>
+
+	<!-- 删除部门与部门成员之间的对应关系 -->
+	<delete id="deleteRelativity" parameterType="com.nb.org.domain.Position">
+		delete from position
+		<where>
+			<if test="person.id != 0">perId = #{person.id}</if>
+			<if test="dep.id != 0">and depId = #{dep.id}</if>
+		</where>
+	</delete>
+	<!-- 更新部门与部门成员之间的对应关系 -->
+	<update id="updateRelativity" parameterType="com.nb.org.domain.Position">
+		update position set name=#{name},adminFlag=#{adminFlag}
+		<where>
+			<if test="person.id != 0">perId = #{person.id}</if>
+			<if test="dep.id != 0">and depId = #{dep.id}</if>
+		</where>
+	</update>
+
+	<!-- 根据person表中的name查询人员信息 -->
+	<select id="selectPersonsByName" parameterType="java.lang.String"
+		resultMap="personResultMap">
+		select * from person where name=#{name}
+	</select>
+	<!-- 根据条件查询人员信息分页 -->
+	<select id="getPagePer" parameterType="com.nb.org.vo.PersonVO"
+		resultMap="personResultMap">
+		select * from person p
+		<choose>
+			<when
+				test="pdepartmentId!=null and pdepartmentId!=0 and pername!=null and pername!=''">
+				join position pos on(pos.perId=p.id) where pos.depId=#{pdepartmentId}
+				and p.name LIKE '%${pername}%'
+			</when>
+			<when
+				test="pdepartmentId!=null and pdepartmentId!=0 and (pername==null or pername=='')">
+				join position pos on(pos.perId=p.id) where pos.depId=#{pdepartmentId}
+			</when>
+			<when
+				test="pername!=null and pername!='' and (pdepartmentId==null or pdepartmentId==0)">
+				where p.name LIKE '%${pername}%'
+			</when>
+			<otherwise>
+				join position pos on(pos.perId=p.id) where pos.depId=#{departmentId}
+			</otherwise>
+		</choose>
+		order
+		by p.id LIMIT #{index},#{len}
+	</select>
+
+	<!-- 根据条件查询人员信息总记录数 -->
+	<select id="getTotalPerPages" parameterType="com.nb.org.vo.PersonVO"
+		resultType="int">
+		select count(*) from person p
+		<choose>
+			<when
+				test="pdepartmentId!=null and pdepartmentId!=0 and pername!=null and pername!=''">
+				join position pos on(pos.perId=p.id) where pos.depId=#{pdepartmentId}
+				and p.name LIKE '%${pername}%'
+			</when>
+			<when
+				test="pdepartmentId!=null and pdepartmentId!=0 and (pername==null or pername=='')">
+				join position pos on(pos.perId=p.id) where pos.depId=#{pdepartmentId}
+			</when>
+			<when
+				test="pername!=null and pername!='' and (pdepartmentId==null or pdepartmentId==0)">
+				where p.name LIKE '%${pername}%'
+			</when>
+			<otherwise>
+				join position pos on(pos.perId=p.id) where pos.depId=#{departmentId}
+			</otherwise>
+		</choose>
+	</select>
+</mapper>  

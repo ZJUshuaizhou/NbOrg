@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IDepartmentSNDao" >
+  <resultMap id="BaseResultMap" type="com.nb.org.domain.DepartmentSN" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parentDeptId" property="parentDeptId" jdbcType="BIGINT" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="base" property="base" jdbcType="VARCHAR" />
+    <result column="flag" property="flag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, parentDeptId, number, base, flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from department_sn
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByParentDeptIdAndFlag" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from department_sn
+    where  parentDeptId = #{0,jdbcType=INTEGER} and flag=#{1,jdbcType=INTEGER} order by number limit 0,1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from department_sn
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.nb.org.domain.DepartmentSN" >
+    insert into department_sn (id, parentDeptId, number, 
+      base, flag)
+    values (#{id,jdbcType=INTEGER}, #{parentDeptId,jdbcType=BIGINT}, #{number,jdbcType=VARCHAR}, 
+      #{base,jdbcType=VARCHAR}, #{flag,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.nb.org.domain.DepartmentSN" >
+    insert into department_sn
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parentDeptId != null" >
+        parentDeptId,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="base != null" >
+        base,
+      </if>
+      <if test="flag != null" >
+        flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parentDeptId != null" >
+        #{parentDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="base != null" >
+        #{base,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.nb.org.domain.DepartmentSN" >
+    update department_sn
+    <set >
+      <if test="parentDeptId != null" >
+        parentDeptId = #{parentDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="base != null" >
+        base = #{base,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.nb.org.domain.DepartmentSN" >
+    update department_sn
+    set parentDeptId = #{parentDeptId,jdbcType=BIGINT},
+      number = #{number,jdbcType=VARCHAR},
+      base = #{base,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

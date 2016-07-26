@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IAppSTSDao">
+	<insert id="insertSTS" parameterType="com.nb.org.domain.AppSTS" keyProperty="id">
+		insert into app_sts (appName,endpoint,certAlias)
+		values(#{appName},#{endpoint},#{certAlias})
+	</insert>
+	<delete id="deleteSTS" parameterType="int">
+		delete from app_sts
+		where id = #{id}
+	</delete>
+	<update id="updateSTS" parameterType="com.nb.org.domain.AppSTS">
+		update app_sts set appName=#{appName},endpoint=#{endpoint},certAlias=#{certAlias} where id=#{id}
+	</update>
+	<select id="getSTSById" resultType="com.nb.org.domain.AppSTS"
+		parameterType="int">
+		select * from app_sts where id=#{id}
+	</select>
+	<select id="getSTSByAppName" resultType="com.nb.org.domain.AppSTS"
+		parameterType="String">
+		select * from app_sts where appName=#{appName}
+	</select>
+</mapper>

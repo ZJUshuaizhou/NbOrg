@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
+                        http://www.springframework.org/schema/context  
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd  
+                        http://www.springframework.org/schema/mvc  
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+	<!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
+	<!-- 自动扫描 -->
+	<context:component-scan
+		base-package="com.nb.org.controller,com.nb.org.rest,com.nb.org.filter,com.nb.org.sync.service,com.nb.org.api" />
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<!-- 定义跳转的文件的前后缀 ，视图模式配置 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 -->
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 配置文件上传，如果没有使用文件上传可以不用配置，当然如果不配，那么配置文件中也不必引入上传组件包 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 默认编码 -->
+		<property name="defaultEncoding" value="utf-8" />
+		<!-- 文件大小最大值 -->
+		<property name="maxUploadSize" value="10485760000" />
+		<!-- 内存中的最大值 -->
+		<property name="maxInMemorySize" value="40960" />
+	</bean>
+
+	<!-- 开始 配置支持返回JSON数据 by upshi -->
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	<!-- 结束 配置支持返回JSON数据 by upshi -->
+
+	<!-- 配置自定义的拦截器 -->
+	<mvc:interceptors>
+		<!-- token 验证拦截器 by ishadow -->
+		<mvc:interceptor>
+			<mvc:mapping path="/rest/person/searchByName/*" />
+			<mvc:mapping path="/rest/person/searchByUserName/*" />
+			<mvc:mapping path="/rest/department/searchName/*" />
+			<mvc:mapping path="/rest/department/searchName/*/*" />
+			<mvc:mapping path="/rest/department/searchName/**" />
+			<mvc:mapping path="/rest/department/searchBySN/*" />
+			<mvc:mapping path="/rest/appRole/searchUserName/*/*" />
+			<mvc:mapping path="/rest/appRole/addRole" />
+			<mvc:mapping path="/rest/appRole/updateRole" />
+			<mvc:mapping path="/rest/appRole/delete/*" />
+			<mvc:mapping path="/rest/validateToken/*" />
+			<bean class="com.nb.org.interceptor.WithTokenAuthenticateRestRequestInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 该拦截所有的REST请求 by upshi -->
+		<mvc:interceptor>
+			<mvc:mapping path="/rest/person/add" />
+			<mvc:mapping path="/rest/person/update" />
+			<mvc:mapping path="/rest/person/searchPosition/*" />
+			<mvc:mapping path="/rest/person/updatePosiion" />
+			<mvc:mapping path="/rest/person/resetPassword" />
+			<mvc:mapping path="/rest/person/delete/*" />
+			<mvc:mapping path="/rest/department/add" />
+			<mvc:mapping path="/rest/department/update" />
+			<mvc:mapping path="/rest/department/delete/*" />
+			<mvc:mapping path="/rest/appInfo/searchByName/*" />
+			<mvc:mapping path="/rest/appInfo/search/creator/*" />
+			<mvc:mapping path="/rest/appInfo/search/departmentId/*" />
+			<mvc:mapping path="/rest/appInfo/add" />
+			<mvc:mapping path="/rest/appInfo/update" />
+			<mvc:mapping path="/rest/appInfo/delete/*" />
+			<mvc:mapping path="/rest/appRole/search/appId/*" />
+			<mvc:mapping path="/rest/appRole/search/appName/*" />
+			<bean class="com.nb.org.interceptor.AuthenticateRestRequestInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+</beans>

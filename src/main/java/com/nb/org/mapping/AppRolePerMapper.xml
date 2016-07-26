@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IAppRolePersonDao">
+	<insert id="insertRoleOfPerson" parameterType="com.nb.org.domain.AppRolePerson"
+		keyProperty="id">
+		insert into app_role_per (appRoleId,personId)
+		values(#{appRole.id},#{person.id})
+	</insert>
+
+	<insert id="addPersonsToRole" parameterType="com.nb.org.domain.AppRolePerson" keyProperty="id">
+		<foreach collection="list" item="item" index="index" separator=";">
+			insert into app_role_per (appRoleId,personId) values(#{item.appRole.id},#{item.person.id})
+		</foreach>
+	</insert>
+
+	<delete id="removePersonsFromRole" parameterType="com.nb.org.domain.AppRolePerson">
+		<foreach collection="list" item="item" index="index" separator=";">
+			delete from app_role_per where appRoleId = #{item.appRole.id} and personId = #{item.person.id}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteRoleOfPersonById" parameterType="int">
+		delete from
+		app_role_per where id=#{id}
+	</delete>
+	<delete id="deletePersonsByRoleId" parameterType="int">
+		delete from
+		app_role_per where appRoleId=#{id}
+	</delete>
+
+
+	<delete id="deleteRoleOfPerson" parameterType="com.nb.org.domain.AppRolePerson">
+		delete from
+		app_role_per where appRoleId=#{appRole.id} and personId=#{person.id}
+	</delete>
+	<select id="getRoleOfPersonById" parameterType="int"
+		resultMap="rolePersonMapper">
+		SELECT * FROM app_role_per WHERE id=#{id}
+	</select>
+	<select id="getRoleOfPerson" parameterType="com.nb.org.domain.AppRolePerson"
+		resultMap="rolePersonMapper">
+		SELECT * FROM app_role_per WHERE #{appRole.id} and
+		personId=#{person.id}
+	</select>
+	<update id="updateRoleOfPerson" parameterType="com.nb.org.domain.AppRolePerson">
+		update
+		app_role_per set appRoleId=#{appRole.id},set personId=#{person.id}
+		where id=#{id}
+	</update>
+
+
+	<select id="getPersonsOfRole" parameterType="int" resultMap="personsMapper">
+		SELECT p.id pid,p.`name` as `name`,p.username as
+		username,p.createDepId as createDepId
+		FROM app_role_per a INNER JOIN person p ON a.personId=p.id
+		WHERE a.appRoleId=#{roleId}
+	</select>
+
+	<select id="getRoleNameForPerson" parameterType="com.nb.org.domain.AppRolePerson"
+		resultType="String">
+		select a.name from app_role a INNER JOIN app_role_per b ON
+		a.id=b.appRoleId
+		where b.appRoleId=#{appRole.id} and b.personId=#{person.id}
+	</select>
+
+
+	<resultMap type="com.nb.org.domain.AppRolePerson" id="rolePersonMapper">
+		<association property="person" column="personId"
+			select="com.nb.org.dao.IPersonDao.selectPerson"></association>
+		<association property="appRole" column="appRoleId"
+			select="com.nb.org.dao.IAppRoleDao.getRoleById"></association>
+	</resultMap>
+
+
+	<resultMap type="com.nb.org.domain.Person" id="personsMapper">
+		<id column="pid" property="id" />
+		<result column="name" property="name" />
+		<result column="username" property="username" />
+		<association property="createDep" column="createDepId"
+			select="com.nb.org.dao.IDepartmentDao.getDepartmentById"></association>
+	</resultMap>
+
+</mapper>

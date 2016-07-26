@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IAppRoleDeparmentDao">
+	<select id="getRoleOfDepartmentById" parameterType="int"
+		resultMap="roleDepartmentMapper">
+		select * from app_role_dep where id=#{id}
+	</select>
+	
+	<select id="getRoleOfDepartment" parameterType="com.nb.org.domain.AppRoleDepartment"
+		resultMap="roleDepartmentMapper">
+		select * from app_role_dep where appRoleId=#{appRole.id} and depId=#{department.id}
+	</select>
+	
+	
+	
+	<select id="getDepartmentsByRole" parameterType="int"
+		resultMap="departmentsMapper">
+		SELECT d.id as did,d.`name` as `name`,d.fullname as fullname,d.sn as sn 
+		FROM app_role_dep a INNER JOIN department d ON a.depId=d.id 
+		WHERE a.appRoleId=#{roleId}
+	</select>
+	
+	<insert id="addDepsToRole" parameterType="com.nb.org.domain.AppRoleDepartment" keyProperty="id">
+		<foreach collection="list" item="item" index="index" separator=";">
+			insert into app_role_dep (appRoleId,depId) values(#{item.appRole.id},#{item.department.id})
+		</foreach>
+	</insert>
+
+	<delete id="removeDepsFromRole" parameterType="com.nb.org.domain.AppRoleDepartment">
+		<foreach collection="list" item="item" index="index" separator=";">
+			delete from app_role_dep where appRoleId = #{item.appRole.id} and depId = #{item.department.id}
+		</foreach>
+	</delete>
+	
+	
+	
+	
+	<update id="updateRoleOfDepartment" parameterType="com.nb.org.domain.AppRoleDepartment">
+		update app_role_dep set appRoleId=#{appRole.id},depId=#{department.id}
+	</update>
+	<delete id="deleteRoleOfDepartmentById" parameterType="int">
+		delete from app_role_dep where id=#{id}
+	</delete>
+	
+	<delete id="deleteRoleOfDepartment" parameterType="com.nb.org.domain.AppRoleDepartment">
+		delete from app_role_dep where appRoleId=#{appRole.id} and depId=#{department.id}
+	</delete>
+	
+	<delete id="deleteDepartmentsByRoleId" parameterType="int">
+		delete from app_role_dep where appRoleId=#{id}
+	</delete>
+	
+	<insert id="insertRoleOfDepartment" parameterType="com.nb.org.domain.AppRoleDepartment">
+		insert into app_role_dep(appRoleId,depId) values(#{appRole.id},#{department.id})
+	</insert>
+
+
+
+	<resultMap type="com.nb.org.domain.AppRoleDepartment" id="roleDepartmentMapper">
+		<association property="department" column="depId"
+			select="com.nb.org.dao.IDepartmentDao.getDepartmentById"></association>
+		<association property="appRole" column="appRoleId" 
+		select="com.nb.org.dao.IAppRoleDao.getRoleById"></association>
+	</resultMap>
+	<resultMap type="com.nb.org.domain.Department" id="departmentsMapper">
+		<id column="did" property="id"/>
+		<result column="name" property="name"></result>
+		<result column="sn" property="sn"></result>
+		<result column="fullname" property="fullname"></result>
+	</resultMap>
+</mapper>  

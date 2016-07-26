@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IAppSAMLDao">
+	<insert id="insertSAML" parameterType="com.nb.org.domain.AppSAML"
+		keyProperty="id">
+		insert into app_saml (appName,
+		issuer,url,logoutUrl)
+		values(#{appName},#{issuer},#{url},#{logoutUrl})
+	</insert>
+	<delete id="deleteSAML" parameterType="int">
+		delete from app_saml
+		where
+		id = #{id}
+	</delete>
+	<update id="updateSAML" parameterType="com.nb.org.domain.AppSAML">
+		update app_saml set
+		appName=#{appName},
+		url=#{url},logoutUrl=#{logoutUrl} where id=#{id}
+	</update>
+	<update id="setIssuer" parameterType="com.nb.org.domain.AppSAML">
+		update app_saml set
+		issuer=#{issuer} where id=#{id}
+	</update>
+	<select id="getSAMLById" resultType="com.nb.org.domain.AppSAML"
+		parameterType="int">
+		select * from app_saml where id=#{id}
+	</select>
+	<select id="getSAMLByAppName" resultType="com.nb.org.domain.AppSAML"
+		parameterType="String">
+		select * from app_saml where appName=#{appName}
+	</select>
+	<select id="getSAMLByAppIssuer" resultType="com.nb.org.domain.AppSAML"
+		parameterType="String">
+		select * from app_saml where issuer=#{issuer}
+	</select>
+</mapper>  

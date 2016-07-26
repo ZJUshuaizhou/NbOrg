@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IDepartmentDao">
+	<resultMap type="com.nb.org.domain.Department" id="departmentResultMap">
+		<id property="id" column="id" />
+		<result property="sn" column="sn" />
+		<result property="name" column="name" />
+		<result property="fullname" column="fullname" />
+		<result property="contactPerson" column="contactPerson" />
+		<result property="contactNumber" column="contactNumber" />
+		<result property="address" column="address" />
+		<result property="description" column="description" />
+		<!-- 查询父模块 -->
+		<association property="parentdep" column="pid"
+			select="getDepartmentById" />
+		<collection property="persons" column="id" select="selectPersons"></collection>
+
+	</resultMap>
+	<select id="selectPersons" resultType="com.nb.org.domain.Person"
+		parameterType="int">
+		select per.* from position pos join person per on(pos.perId=per.id) where
+		pos.depId=#{id}
+	</select>
+	<insert id="insertDepartment" parameterType="com.nb.org.domain.Department"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into department ( sn, name,fullname,
+		contactPerson,contactNumber,address,description,pid)
+		values ( #{sn}, #{name},#{fullname},#{contactPerson}, #{contactNumber},#{address},
+		#{description},#{parentdep.id})
+	</insert>
+	<delete id="delDepartment" parameterType="int">
+		delete from department where id = #{id}
+	</delete>
+	<select id="getDepartmentById" resultMap="departmentResultMap"
+		parameterType="int">
+		select * from department where id=#{id}
+	</select>
+	<update id="updateDepartment" parameterType="com.nb.org.domain.Department">
+		update department
+		set
+		name=#{name},fullname=#{fullname},contactPerson=#{contactPerson},contactNumber=#{contactNumber},address=#{address},
+		description=#{description},pid=#{parentdep.id} where id=#{id}
+	</update>
+	<!-- 根据department表中的sn查询部门信息 -->
+	<select id="selectDepBySN" parameterType="java.lang.String"
+		resultMap="departmentResultMap">
+		select * from department where sn=#{sn}
+	</select>
+	
+	<!-- 根据department表中的sn查询部门信息 -->
+	<select id="getDepartmentsByNames" parameterType="java.lang.String" resultMap="departmentResultMap">
+		select * from department
+		<where>
+			name in
+			<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+	
+	<!-- 根据department表中的name查询部门信息 -->
+	<select id="selectDepByName" parameterType="java.lang.String"
+		resultMap="departmentResultMap">
+		select * from department where name=#{name}
+	</select>
+	<!-- 根据department表中的fullname查询部门信息 -->
+	<select id="selectDepByFullName" parameterType="java.lang.String"
+		resultMap="departmentResultMap">
+		select * from department where fullname=#{fullname}
+	</select>
+	<!-- 根据department表中的pid查询部门信息 -->
+	<select id="getDepByParentDep" parameterType="com.nb.org.domain.Department"
+		resultMap="departmentResultMap">
+		select * from department where pid=#{id}
+	</select>
+	<!-- 根据department表中的pid查询部门信息分页 -->
+	<select id="getPageDepByParentDep" parameterType="com.nb.org.vo.DepartmentVO"
+		resultMap="departmentResultMap">
+		select * from department d where pid=#{departmentId} order
+		by d.id LIMIT #{index},#{len}
+	</select>
+	
+<!-- 根据department表中的pid查询部门信息总记录数-->
+	<select id="getTotalDepPagesByParentDep" parameterType="com.nb.org.domain.Department"
+		resultType="int">
+		select count(*) from department where pid=#{id}
+	</select>
+	<!-- 根据department表中的name查询部门信息分页 -->
+	<select id="getPageDepByName" parameterType="com.nb.org.vo.DepartmentVO"
+		resultMap="departmentResultMap">
+		select * from department d where name=#{name} order
+		by d.id LIMIT #{index},#{len}
+	</select>
+	
+<!-- 根据department表中的name查询部门信息总记录数-->
+	<select id="getTotalDepPagesByName" parameterType="java.lang.String"
+		resultType="int">
+		select count(*) from department where name=#{name}
+	</select>
+	<!-- 根据department表中的fullname查询部门信息分页 -->
+	<select id="getPageDepByFullName" parameterType="com.nb.org.vo.DepartmentVO"
+		resultMap="departmentResultMap">
+		select * from department d where fullname=#{fullname} order
+		by d.id LIMIT #{index},#{len}
+	</select>
+	
+<!-- 根据department表中的fullname查询部门信息总记录数-->
+	<select id="getTotalDepPagesByFullName" parameterType="java.lang.String"
+		resultType="int">
+		select count(*) from department where fullname=#{fullname}
+	</select>
+	<!-- 根据department表查询部门信息分页 -->
+	<select id="getPageDep" parameterType="com.nb.org.vo.DepartmentVO"
+		resultMap="departmentResultMap">
+		select * from department d where 1=1
+		<choose>
+            <when test="pid!=null and pid!=0">
+               and pid=#{pid}
+            </when>
+            <when test="name!=null and name!=''">
+                and name LIKE '%${name}%'
+            </when>
+             <when test="fullname!=null and fullname!=''">
+               and fullname=#{fullname}
+            </when>
+            <otherwise>
+                and (pid=#{departmentId} or id=#{departmentId})
+            </otherwise>
+        </choose>
+		order by d.id LIMIT #{index},#{len}
+	</select>
+	
+<!-- 根据department表查询部门信息总记录数-->
+	<select id="getTotalDepPages" parameterType="com.nb.org.vo.DepartmentVO"
+		resultType="int">
+		select count(*) from department d where 1=1
+		<choose>
+            <when test="pid!=null and pid!=0">
+               and pid=#{pid}
+            </when>
+            <when test="name!=null and name!=''">
+                and name LIKE '%${name}%'
+            </when>
+             <when test="fullname!=null and fullname!=''">
+               and fullname=#{fullname}
+            </when>
+            <otherwise>
+                and (pid=#{departmentId} or id=#{departmentId})
+            </otherwise>
+        </choose>
+	</select>
+</mapper>  

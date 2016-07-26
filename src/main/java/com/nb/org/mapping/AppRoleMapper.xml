@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IAppRoleDao">
+	<insert id="insertAppRole" parameterType="com.nb.org.domain.AppRole"
+		keyProperty="id">
+		insert into app_role (name,appInfoId)
+		values(#{name},#{appId})
+	</insert>
+	<delete id="deleteAppRoleById" parameterType="int">
+		delete from
+		app_role
+		where
+		id = #{id}
+	</delete>
+	<delete id="deleteRolesByAppId" parameterType="int">
+		delete from
+		app_role
+		where
+		appInfoId = #{id}
+	</delete>
+
+	<update id="updateAppRole" parameterType="com.nb.org.domain.AppRole">
+		update app_role set
+		name=#{name}, appInfoId=#{appId} where id=#{id}
+	</update>
+	<select id="getRolesByAppId" resultMap="appRoleMapper"
+		parameterType="int">
+		select id ,`name` roleName,appInfoId appId,id roleId
+		from app_role where appInfoId=#{appId}
+	</select>
+	
+	<select id="getAppIdByAppName" parameterType="String" resultType="int">
+	select id from app_info where name=#{appName}
+	</select>
+	
+	<select id="getRoleById" resultMap="appRoleMapper"
+		parameterType="int">
+		select id ,`name` roleName,appInfoId appId,id roleId
+		from app_role where id=#{id}
+	</select>
+	<select id="getRoleByNameAndApp" resultMap="appRoleMapper"
+		parameterType="com.nb.org.domain.AppRole">
+		select id ,`name` roleName,appInfoId appId,id roleId
+		from app_role where name=#{name} and appInfoId=#{appId}
+	</select>
+	
+	<select id="searchDepartment" parameterType="String" resultType="com.nb.org.dto.RoleDepsDTO">
+		SELECT id,fullname FROM department where fullname LIKE
+		CONCAT(CONCAT('%', #{name}),
+		'%') order by id LIMIT 0,200
+	</select>
+	<select id="searchPerson" parameterType="String" resultMap="searchPerMapper">
+		SELECT id,name,createDepId FROM person where name LIKE
+		CONCAT(CONCAT('%', #{name}),
+		'%') order by id LIMIT 0,200
+	</select>
+	<select id="getDepartmentById" parameterType="int" resultType="String">
+		select fullname from department where id=#{id}
+	</select>
+	<resultMap type="com.nb.org.dto.RolePersDTO" id="searchPerMapper">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<association column="createDepId" property="dep"
+			select="getDepartmentById"></association>
+	</resultMap>
+	<resultMap type="com.nb.org.domain.Department" id="departmentMapper">
+		<result column="fullname" property="fullname" />
+	</resultMap>
+
+
+	<resultMap type="com.nb.org.domain.AppRole" id="appRoleMapper">
+		<id column="id" property="id"></id>
+		<result column="roleName" property="name" />
+		<result column="appId" property="appId" />
+		<collection property="persons" column="roleId"
+			select="com.nb.org.dao.IAppRolePersonDao.getPersonsOfRole">
+		</collection>
+		<collection property="departments" column="roleId"
+			select="com.nb.org.dao.IAppRoleDeparmentDao.getDepartmentsByRole">
+		</collection>
+	</resultMap>
+</mapper>  

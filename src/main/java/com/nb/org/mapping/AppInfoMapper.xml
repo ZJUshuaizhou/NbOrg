@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.nb.org.dao.IAppInfoDao">
+	<insert id="insertApp" parameterType="com.nb.org.domain.AppInfo"
+		keyProperty="id">
+		insert into app_info (name,description,creator,manageDepId
+		<if test="oauth != null">
+			,oauthId
+		</if>
+		<if test="saml != null">
+			,samlId
+		</if>
+		<if test="sts != null">
+			,stsId
+		</if>
+		)
+		values (#{name},#{description},#{creator.id},#{manageDep.id}
+		<if test="oauth != null">
+			,#{oauth.id}
+		</if>
+		<if test="saml != null">
+			,#{saml.id}
+		</if>
+		<if test="saml != null">
+			,#{sts.id}
+		</if>
+		)
+	</insert>
+	<delete id="deleteApp" parameterType="int">
+		delete from app_info where
+		id=#{id}
+	</delete>
+	<update id="updateApp" parameterType="com.nb.org.domain.AppInfo">
+		update app_info set
+		name=#{name},description=#{description},creator=#{creator.id},
+		manageDepId=#{manageDep.id},oauthId=#{oauth.id},samlId=#{saml.id},stsId=#{sts.id}
+		where id=#{id}
+	</update>
+	<select id="getAppByName" parameterType="String" resultMap="appInfoMapper">
+		select * from app_info where name=#{name}
+	</select>
+
+	<select id="getPersonIdByUsername" parameterType="String" resultType="int">
+		select id from person where username=#{username}
+	</select>
+	<select id="getAppsByPersonId" parameterType="int" resultMap="appInfoMapper">
+		select * from app_info where creator = #{id}
+	</select>
+	<select id="getAppsByDepartmentId" parameterType="int"
+		resultMap="appInfoMapper">
+		select * from app_info where manageDepId = #{id}
+	</select>
+
+
+	<select id="getAppById" parameterType="int" resultMap="appInfoMapper">
+		select *
+		from app_info where id=#{id}
+	</select>
+	
+	
+	<select id="listAppsPageByPId" parameterType="com.nb.org.vo.ApplicationVO"
+		resultMap="appInfoMapper">
+		SELECT * FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department d ON a.manageDepId=d.id
+		where p.id=#{visitorId} order
+		by a.id LIMIT #{index},#{len}
+	</select>
+	<select id="countAppsPageByPId" parameterType="int" resultType="int">
+		SELECT count(a.id) FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department d ON a.manageDepId=d.id
+		where p.id=#{visitorId}
+	</select>
+
+	<select id="listAppsPageByDId" parameterType="com.nb.org.vo.ApplicationVO"
+		resultMap="appInfoMapper">
+		SELECT * FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON
+		a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department
+		d ON a.manageDepId=d.id
+		where manageDepId=#{currentDepId} and p.id <![CDATA[<>]]>
+		#{visitorId} order
+		by a.id LIMIT #{index},#{len}
+	</select>
+	<select id="countAppsPageByDId" parameterType="com.nb.org.vo.ApplicationVO"
+		resultType="int">
+		SELECT count(a.id) FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department d ON a.manageDepId=d.id
+		where
+		manageDepId=#{currentDepId} and p.id <![CDATA[<>]]>
+		#{visitorId}
+	</select>
+
+
+	<select id="searchAppByName" parameterType="com.nb.org.vo.ApplicationVO"
+		resultMap="appInfoMapper">
+		SELECT * FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON
+		a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department
+		d ON a.manageDepId=d.id
+		where p.id=#{visitorId}
+		<if test='searchAppByName!="null"'>
+			and a.name LIKE CONCAT(CONCAT('%', #{searchAppByName}),
+			'%')
+		</if>
+		order by a.id LIMIT #{index},#{len}
+	</select>
+	<select id="countSearchAppByName" parameterType="com.nb.org.vo.ApplicationVO"
+		resultType="int">
+		SELECT count(a.id) FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department d ON a.manageDepId=d.id
+		where p.id=#{visitorId}
+		<if test='searchAppByName!="null"'>
+			and a.name LIKE CONCAT(CONCAT('%', #{searchAppByName}),
+			'%')
+		</if>
+	</select>
+
+	<select id="searchOtherApp" parameterType="com.nb.org.vo.ApplicationVO"
+		resultMap="appInfoMapper">
+		SELECT * FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON
+		a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department
+		d ON a.manageDepId=d.id
+		where manageDepId=#{currentDepId} and p.id <![CDATA[<>]]>
+		#{visitorId}
+		<if test='searchOtherAppByName!="null"'>
+			and a.name LIKE CONCAT(CONCAT('%',
+			#{searchOtherAppByName}), '%')
+		</if>
+		<if test='searchOtherAppByCreator!="null"'>
+			and p.name LIKE CONCAT(CONCAT('%',
+			#{searchOtherAppByCreator}), '%')
+		</if>
+		order by a.id LIMIT #{index},#{len}
+	</select>
+	<select id="countSearchOtherApp" parameterType="com.nb.org.vo.ApplicationVO"
+		resultType="int">
+		SELECT count(a.id) FROM app_info a
+		INNER JOIN app_oauth oa ON
+		a.oauthId=oa.id
+		INNER JOIN app_saml sa ON a.samlId=sa.id
+		INNER JOIN
+		app_sts st ON a.stsId=st.id
+		INNER JOIN person p ON a.creator=p.id
+		INNER
+		JOIN department d ON a.manageDepId=d.id
+		where
+		manageDepId=#{currentDepId} and p.id <![CDATA[<>]]>
+		#{visitorId}
+		<if test='searchOtherAppByName!="null"'>
+			and a.name LIKE CONCAT(CONCAT('%',
+			#{searchOtherAppByName}), '%')
+		</if>
+		<if test='searchOtherAppByCreator!="null"'>
+			and p.name LIKE CONCAT(CONCAT('%',
+			#{searchOtherAppByCreator}), '%')
+		</if>
+	</select>
+
+
+
+
+
+
+
+
+
+	<select id="getApps" resultMap="appInfoMapper">
+		select * from app_info
+	</select>
+
+	<resultMap type="com.nb.org.domain.AppInfo" id="appInfoMapper">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="description" column="description" />
+		<association property="creator" column="creator"
+			select="com.nb.org.dao.IPersonDao.selectPerson"></association>
+		<association property="manageDep" column="manageDepId"
+			select="com.nb.org.dao.IDepartmentDao.getDepartmentById"></association>
+		<association property="oauth" column="oauthid"
+			select="com.nb.org.dao.IAppOAuthDao.getOAuthById"></association>
+		<association property="saml" column="samlid"
+			select="com.nb.org.dao.IAppSAMLDao.getSAMLById"></association>
+		<association property="sts" column="stsId"
+			select="com.nb.org.dao.IAppSTSDao.getSTSById"></association>
+		<collection property="appRoles" ofType="com.nb.org.domain.AppRole" column="id" 
+		select="com.nb.org.dao.IAppRoleDao.getRolesByAppId"></collection>
+	</resultMap>
+</mapper>  

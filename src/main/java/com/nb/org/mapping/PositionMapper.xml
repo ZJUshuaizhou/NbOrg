@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nb.org.dao.IPositionDao">
+<resultMap type="com.nb.org.domain.Department" id="departmentResultMap">
+		<id property="id" column="id" />
+		<result property="sn" column="sn"/>
+		<result property="name" column="name"/>
+		<result property="fullname" column="fullname" />
+		<result property="contactPerson" column="contactPerson"/>
+		<result property="contactNumber" column="contactNumber"/>
+		<result property="address" column="address"/>
+		<result property="description" column="description"/>
+	</resultMap>
+	<resultMap type="com.nb.org.domain.Person" id="personResultMap">
+		<id property="id" column="id" />
+		<result property="sn" column="sn"/>
+		<result property="name" column="name"/>
+		<result property="username" column="username"/>
+		<result property="gender" column="gender"/>
+		<result property="telephone" column="telephone"/>
+		<result property="mobilephone" column="mobilephone"/>
+		<result property="email" column="email"/>	
+	</resultMap>
+	<resultMap type="com.nb.org.domain.Position" id="positionResultMap">
+		<id property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="adminFlag" column="adminFlag"/>
+		<association property="person" column="perId" select="getPersonById"/>
+		<association property="dep" column="depId" select="getDepartmentById"/>
+	</resultMap>
+	<select id="getDepartmentById" resultMap="departmentResultMap" parameterType="int">
+		select * from department where id=#{id}
+	</select>
+	<select id="getPersonById" resultMap="personResultMap" parameterType="int">
+		select * from person where id=#{id}
+	</select>
+	
+	<select id="selectPositionsByPersonId" resultMap="positionResultMap" parameterType="int">
+		select * from position where perId=#{personId}
+	</select>
+	
+	<!-- 根据position表中的id查询人员信息 -->
+	<select id="selectPosition" parameterType="int" resultMap="positionResultMap">
+	select * from position where id=#{id}
+	</select>
+	<select id="selectPositionByPerDep"  resultMap="positionResultMap">
+	select * from position where perId=#{0} and depId=#{1}
+	</select>
+	<update id="updatePosition" parameterType="com.nb.org.domain.Position">
+	update position set name=#{name},perId=#{person.id},depId=#{dep.id},adminFlag=#{adminFlag} where id=#{id}
+	</update>
+	
+</mapper>  
