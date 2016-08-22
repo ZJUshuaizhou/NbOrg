@@ -14,6 +14,7 @@ import com.nb.org.dao.IDepartmentDao;
 import com.nb.org.dao.IDepartmentSNDao;
 import com.nb.org.domain.Department;
 import com.nb.org.domain.DepartmentSN;
+import com.nb.org.domain.SimpleDepartment;
 import com.nb.org.exception.DepartmentException;
 import com.nb.org.exception.PersonException;
 import com.nb.org.service.IDepartmentService;
@@ -223,4 +224,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
 	public List<Department> getDepartmentsByNames(List<String> spliceNames) {
 		return departmentDao.getDepartmentsByNames(spliceNames);
 	}
+
+	/* (non-Javadoc)
+	 * @see com.nb.org.service.IDepartmentService#selectAllDepartments(java.lang.String)
+	 */
+	@Override
+	public List<SimpleDepartment> selectAllDepartments(String name) {
+		// TODO Auto-generated method stub
+		return departmentDao.selectAllDepartments("");
+	}
+
+	
+
+	
 }

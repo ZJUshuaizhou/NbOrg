@@ -4,9 +4,8 @@ import java.util.List;
 
 import com.nb.org.domain.Department;
 import com.nb.org.domain.DepartmentSN;
-import com.nb.org.domain.Person;
+import com.nb.org.domain.SimpleDepartment;
 import com.nb.org.exception.DepartmentException;
-import com.nb.org.vo.ApplicationVO;
 import com.nb.org.vo.DepartmentVO;
 
 public interface IDepartmentService {
@@ -88,4 +87,8 @@ public interface IDepartmentService {
 	 * 通过部门名称的范围查询部门   by  upshi 20160302
 	 * */
 	List<Department> getDepartmentsByNames(List<String> spliceNames);
+	/*
+	 * 查询所有部门 by ishadow 20160822
+	 */
+	List<SimpleDepartment> selectAllDepartments(String name);
 }

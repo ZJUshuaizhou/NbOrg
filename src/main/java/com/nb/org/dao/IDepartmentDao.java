@@ -3,6 +3,7 @@ package com.nb.org.dao;
 import java.util.List;
 
 import com.nb.org.domain.Department;
+import com.nb.org.domain.SimpleDepartment;
 import com.nb.org.exception.DepartmentException;
 import com.nb.org.vo.DepartmentVO;
 
@@ -37,5 +38,5 @@ public interface IDepartmentDao {
 	int getTotalDepPages(DepartmentVO vo);
 
 	List<Department> getDepartmentsByNames(List<String> spliceNames);
-
+	List<SimpleDepartment> selectAllDepartments(String name);
 }

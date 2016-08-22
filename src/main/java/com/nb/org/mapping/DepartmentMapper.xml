@@ -16,6 +16,19 @@
 		<collection property="persons" column="id" select="selectPersons"></collection>
 
 	</resultMap>
+	
+	<resultMap type="com.nb.org.domain.SimpleDepartment" id="departmentResultMap1">
+		<id property="id" column="id" />
+		<result property="sn" column="sn" />
+		<result property="name" column="name" />
+		<result property="fullname" column="fullname" />
+		<result property="contactPerson" column="contactPerson" />
+		<result property="contactNumber" column="contactNumber" />
+		<result property="address" column="address" />
+		<result property="description" column="description" />
+		<result property="pid" column="pid" />
+	</resultMap>
+	
 	<select id="selectPersons" resultType="com.nb.org.domain.Person"
 		parameterType="int">
 		select per.* from position pos join person per on(pos.perId=per.id) where
@@ -148,5 +161,9 @@
                 and (pid=#{departmentId} or id=#{departmentId})
             </otherwise>
         </choose>
+	</select>
+	
+	<select id="selectAllDepartments" parameterType="java.lang.String" resultMap="departmentResultMap1">
+		select * from department
 	</select>
 </mapper>  

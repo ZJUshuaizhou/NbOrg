@@ -56,23 +56,26 @@
 
 	<!-- 配置自定义的拦截器 -->
 	<mvc:interceptors>
-		<!-- token 验证拦截器 by ishadow -->
-		<mvc:interceptor>
-			<mvc:mapping path="/rest/person/searchByName/*" />
-			<mvc:mapping path="/rest/person/searchByUserName/*" />
-			<mvc:mapping path="/rest/department/searchName/*" />
-			<mvc:mapping path="/rest/department/searchName/*/*" />
-			<mvc:mapping path="/rest/department/searchName/**" />
-			<mvc:mapping path="/rest/department/searchBySN/*" />
-			<mvc:mapping path="/rest/appRole/searchUserName/*/*" />
-			<mvc:mapping path="/rest/appRole/addRole" />
-			<mvc:mapping path="/rest/appRole/updateRole" />
-			<mvc:mapping path="/rest/appRole/delete/*" />
-			<mvc:mapping path="/rest/validateToken/*" />
-			<bean class="com.nb.org.interceptor.WithTokenAuthenticateRestRequestInterceptor"></bean>
-		</mvc:interceptor>
-		<!-- 该拦截所有的REST请求 by upshi -->
-		<mvc:interceptor>
+		
+		<!-- 该拦截所有的REST请求 by upshi-->
+		 <mvc:interceptor>
+			<mvc:mapping path="/rest/*"/>
+			<mvc:mapping path="/rest/*/*"/>
+			<mvc:mapping path="/rest/**"/>
+			<mvc:exclude-mapping path="/rest/person/searchByName/*" />
+			<mvc:exclude-mapping path="/rest/person/searchByUserName/*" />
+			<mvc:exclude-mapping path="/rest/department/searchName/*" />
+			<mvc:exclude-mapping path="/rest/department/searchName/*/*" />
+			<mvc:exclude-mapping path="/rest/department/searchName/**" />
+			<mvc:exclude-mapping path="/rest/department/searchBySN/*" />
+			<mvc:exclude-mapping path="/rest/appRole/searchUserName/*/*" />
+			<mvc:exclude-mapping path="/rest/appRole/addRole" />
+			<mvc:exclude-mapping path="/rest/appRole/updateRole" />
+			<mvc:exclude-mapping path="/rest/appRole/delete/*" />
+			<mvc:exclude-mapping path="/rest/validateToken/*" />
+			<mvc:exclude-mapping path="/rest/department/searchalldepartment" />
+			<mvc:exclude-mapping path="/rest/department/searchalldepartment/*" />
+		<!--
 			<mvc:mapping path="/rest/person/add" />
 			<mvc:mapping path="/rest/person/update" />
 			<mvc:mapping path="/rest/person/searchPosition/*" />
@@ -90,7 +93,44 @@
 			<mvc:mapping path="/rest/appInfo/delete/*" />
 			<mvc:mapping path="/rest/appRole/search/appId/*" />
 			<mvc:mapping path="/rest/appRole/search/appName/*" />
+			
+			<mvc:mapping path="/rest/person/*" />
+			<mvc:mapping path="/rest/person" />
+			<mvc:mapping path="/rest/person/position/*" />
+			<mvc:mapping path="/rest/person/position" />
+			<mvc:mapping path="/rest/person/password" />
+			<mvc:mapping path="/rest/department/*" />
+			<mvc:mapping path="/rest/department" />
+			<mvc:mapping path="/rest/appinfo/*" />
+			<mvc:mapping path="/rest/appinfo/creator/*" />
+			<mvc:mapping path="/rest/appinfo/departmentid/*" />
+			<mvc:mapping path="/rest/appinfo" />
+			<mvc:mapping path="/rest/approle/appid/*" />
+			<mvc:mapping path="/rest/approle/appName/*" />
+			<mvc:mapping path="/rest/*" />
+			<mvc:mapping path="/rest/approle" />
+			<mvc:mapping path="/rest/approle/*" />
+			-->
+			
 			<bean class="com.nb.org.interceptor.AuthenticateRestRequestInterceptor"></bean>
+		</mvc:interceptor>
+	<!-- token 验证拦截器 by ishadow -->
+		<mvc:interceptor>
+			
+			<mvc:mapping path="/rest/person/searchByName/*" />
+			<mvc:mapping path="/rest/person/searchByUserName/*" />
+			<mvc:mapping path="/rest/department/searchalldepartment" />
+			<mvc:mapping path="/rest/department/searchalldepartment/*" />
+			<mvc:mapping path="/rest/department/searchName/*" />
+			<mvc:mapping path="/rest/department/searchName/*/*" />
+			<mvc:mapping path="/rest/department/searchName/**" />
+			<mvc:mapping path="/rest/department/searchBySN/*" />
+			<mvc:mapping path="/rest/appRole/searchUserName/*/*" />
+			<mvc:mapping path="/rest/appRole/addRole" />
+			<mvc:mapping path="/rest/appRole/updateRole" />
+			<mvc:mapping path="/rest/appRole/delete/*" />
+			<mvc:mapping path="/rest/validateToken/*" />
+			<bean class="com.nb.org.interceptor.WithTokenAuthenticateRestRequestInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
 
