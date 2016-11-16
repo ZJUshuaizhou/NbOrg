@@ -608,4 +608,34 @@ public class DepartmentRest {
 		}
 		return map;
 	}
+	
+	/**
+	 * @author ishadow
+	 * @date 20160317
+	 * @url /rest/department/sn/{sn}
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/sn/{sn}", method = RequestMethod.GET)
+	public Map<String, Object> oldSearchBySN(@PathVariable String sn) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Department department = null;
+		try {
+			department = departmentService.selectDepBySN(sn);
+			department.getPersons().clear();
+		} catch (DepartmentException e) {
+			map.put("code", "4003");
+			map.put("result", "failure");
+			map.put("reason", "您查询的部门不存在");
+		}
+		if (department != null) {
+			map.put("code", "8000");
+			map.put("result", "success");
+			map.put("department", department);
+		} else {
+			map.put("code", "4003");
+			map.put("result", "failure");
+			map.put("reason", "您查询的部门不存在");
+		}
+		return map;
+	}
 }

@@ -346,8 +346,8 @@ public class DepartmentController {
 		 */
 		boolean entitled1 = false;
 		try {
-			entitled1 = departmentPermissionService.getDepartmantOperationPermission(id, person1.getId(),
-					department1.getId()) == 1;
+			entitled1 = departmentPermissionService.getDepartmantOperationPermissionWithoutAdmin(id, person1.getId(),department1.getId()) == 1;
+//			entitled1 = departmentPermissionService.getDepartmantOperationPermission(id, person1.getId(),department1.getId()) == 1;
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

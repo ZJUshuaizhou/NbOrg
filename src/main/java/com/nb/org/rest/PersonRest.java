@@ -972,4 +972,32 @@ public class PersonRest {
 		}
 		return map;
 	}
+	
+	/**
+	 * @author ishadow
+	 * @throws UnsupportedEncodingException 
+	 * @date 20160825
+	 * @url /rest/person/token/searchByUserName/{userName}
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/userName/{userName}", method = RequestMethod.GET)
+	public Map<String, Object> OldsearchByUserName(@PathVariable String userName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Person person = null;
+		try {
+			person = personService.getPersonByUserName(new String(userName.getBytes("ISO-8859-1"),"UTF-8"));
+		} catch (PersonException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		if (person != null) {
+			map.put("code", "8000");
+			map.put("result", "success");
+			map.put("person", person);
+		} else {
+			map.put("code", "3001");
+			map.put("result", "failure");
+			map.put("reason", "您查询的用户不存在");
+		}
+		return map;
+	}
 }

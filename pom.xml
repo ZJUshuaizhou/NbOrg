@@ -8,7 +8,8 @@
 	<name>nborg</name>
 	<url>http://maven.apache.org</url>
 
-	<!-- 修改本项目的Maven仓库地址为自建私库 -->
+
+	<!-- 修改本项目的Maven仓库地址为自建私库 
 	<repositories>
 		<repository>
 			<id>nexus</id>
@@ -33,7 +34,7 @@
 			<name>NBORG Nexus Repository</name>
 			<url>http://www.ranranup.com/nexus/content/groups/public/</url>
 		</pluginRepository>
-	</pluginRepositories>
+	</pluginRepositories>-->
 
 	<properties>
 		<!-- spring版本号 -->

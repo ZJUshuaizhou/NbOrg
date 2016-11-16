@@ -58,7 +58,7 @@
                     <div class="col-md-6 form-group">
                         <label class="col-md-4 control-label">所属部门:</label>
                         <div class="col-md-8">
-                            <select id="id_select" class="selectpicker bla bla bli" data-live-search="true" name="deplist" disabled="disabled">
+                            <select id="id_select" class="selectpicker bla bla bli" data-live-search="true" name="deplist" ><!-- disabled="disabled" -->
 		        <optgroup label="请选择所属部门" data-subtext="只能选一个部门更新" data-icon="icon-ok" >
 		             <c:forEach items="${editdeplist}" var="dep" varStatus="id">
 		             <option <c:if test="${dep.fullname eq per.dep}"> selected="selected"</c:if>>${dep.fullname }</option>

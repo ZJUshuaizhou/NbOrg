@@ -99,6 +99,30 @@ public class DepartmentPermissionServiceImpl implements IDepartmentPermissionSer
 		// return 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.nb.org.service.IDepartmentPermissionService#getDepartmantOperationPermissionWithoutAdmin(int, int, int)
+	 */
+	@Override
+	public int getDepartmantOperationPermissionWithoutAdmin(int operateDepId, int operatorId, int depId)
+			throws Exception {
+		// TODO Auto-generated method stub
+		Department department = departmentService.getDepartmentById(depId);
+		// 获取操作者的职位
+		Position position = personService.selectPositionByPerDep(operatorId, depId);
+		// 判断操作者是否为管理员
+		int adminFlag = 0;
+		adminFlag = position.getAdminFlag();
+			// 查询操作者所能操作的所有部门
+			List<Department> list = new ArrayList<Department>();
+			list = departmentService.getAllChildDeps(list, department);
+			list.add(department);
+			for (Department dep : list) {
+				if (dep.getId() == operateDepId) {
+					return 1;
+				}
+			}
+			return 0;
+	}
 
-
+	
 }

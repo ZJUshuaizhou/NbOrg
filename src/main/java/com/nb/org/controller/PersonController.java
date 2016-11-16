@@ -23,6 +23,7 @@ import com.nb.org.exception.DepartmentException;
 import com.nb.org.exception.PersonException;
 import com.nb.org.service.IDepartmentService;
 import com.nb.org.service.IPersonService;
+import com.nb.org.service.IPositionService;
 import com.nb.org.util.SNGenerator;
 import com.nb.org.vo.PersonVO;
 
@@ -45,6 +46,9 @@ public class PersonController {
 	
 	@Resource
 	private SNGenerator snGenerator;
+	
+	@Resource
+	private IPositionService positionService;
 	
 	
 	/**
@@ -240,11 +244,26 @@ public class PersonController {
 	 */
 	@RequestMapping("/edit/{id}")
 	public String PersonEdit(@PathVariable(value="id") int id ,@RequestParam("depsn") String depsn,HttpSession session,Model model){
-		//Person user= (Person) session.getAttribute("user");
+		//当前登陆用户
+		Person user= (Person) session.getAttribute("user");
+		
 		Department department=(Department) session.getAttribute("dep");
+		
+		for (int i = 0; i < user.getDeps().size(); i++) {
+			try {
+				departmentService.getDepByParentDep(user.getDeps().get(i)).contains(department);
+				positionService.isAdmin(user.getName(), user.getDeps().get(i).getSn());
+			} catch (DepartmentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		List<Position> position=positionService.selectPositionsByPersonId(user.getId());
 		List<Department> list=new ArrayList<Department>();
 		list.add(department);
 		list=getChildDeps(list,department);
+		
 		model.addAttribute("editdeplist",list);
 		String gender="不详";
 		Person per=new Person();

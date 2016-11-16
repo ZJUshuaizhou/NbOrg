@@ -13,7 +13,15 @@
 </head>
 <body class="body-bg">
 <div class="main">
-    <p class="title">非常抱歉，出现未知错误！</p>
-    <a href="/NbOrg/index" class="btn">返回网站首页</a>
+    <p class="title">非常抱歉，出现未知错误！3秒后请重新登陆！</p>
+    <p class="title">3秒后跳转至登陆界面</p>
+    <!-- <a href="/NbOrg/login.jsp" class="btn">返回网站首页</a> -->
 </div>
+<script>
+window.onload = function(){
+	setTimeout(function(){
+		window.location.href = "/NbOrg/login.jsp";
+	},3000);
+}
+</script>
 </body></html>
